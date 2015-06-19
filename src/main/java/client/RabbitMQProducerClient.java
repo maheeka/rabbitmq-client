@@ -28,8 +28,8 @@ public class RabbitMQProducerClient {
     private ConnectionFactory factory = null;
     private Connection connection = null;
     private Channel channel = null;
-    private String exchangeName = null;
-    private String routeKey = null;
+    private String exchangeName;
+    private String routeKey;
 
     public RabbitMQProducerClient(String host, int port, String username, String password) {
         factory = new ConnectionFactory();

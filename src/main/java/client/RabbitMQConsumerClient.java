@@ -31,7 +31,7 @@ public class RabbitMQConsumerClient {
     private ConnectionFactory factory = null;
     private Connection connection = null;
     private Channel channel = null;
-    private String routeKey = null;
+    private String routeKey;
 
     public RabbitMQConsumerClient(String host) {
         factory = new ConnectionFactory();
@@ -68,7 +68,7 @@ public class RabbitMQConsumerClient {
 
     public List<String> popAllMessages() throws IOException, InterruptedException {
         List<String> messages = new ArrayList<String>();
-        GetResponse response = null;
+        GetResponse response;
 
         while ((response = channel.basicGet(routeKey, true)) != null) {
             messages.add(new String(response.getBody()));
