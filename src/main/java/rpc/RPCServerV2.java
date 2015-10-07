@@ -13,6 +13,8 @@ public class RPCServerV2 {
     public static void main(String[] argv) {
         Connection connection = null;
         Channel channel;
+        int counter = 1;
+        long startTime = 0;
         try {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setHost("localhost");
@@ -23,13 +25,12 @@ public class RPCServerV2 {
             channel.basicConsume("queue1", false, consumer);
 
             System.out.println(" [x] Awaiting RPC requests");
-            int counter = 1;
 
             while (true) {
                 String response = null;
                 QueueingConsumer.Delivery delivery = consumer.nextDelivery();
                 counter ++;
-                System.out.println("Forwarding .. " + counter);
+                //System.out.println(counter);
                 BasicProperties props = delivery.getProperties();
                 BasicProperties replyProps = new BasicProperties.Builder().correlationId(props.getCorrelationId()).contentType("application/json")
                         .build();
@@ -37,11 +38,13 @@ public class RPCServerV2 {
 
                 //System.out.println("Received : ".concat(new String(delivery.getBody(), "UTF-8")));
                 String replyToQueue = props.getReplyTo();
+                //System.out.println(counter + " Publishing to : " + replyToQueue);
 //                System.out.println("Reply to : " + replyToQueue);
 //                System.out.println("Publishing : " + response);
-                channel.basicPublish("", props.getReplyTo(), replyProps, response.getBytes("UTF-8"));
+                channel.basicPublish("", replyToQueue, replyProps, response.getBytes("UTF-8"));
                 channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
